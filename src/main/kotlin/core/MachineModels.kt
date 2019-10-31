@@ -6,8 +6,8 @@ data class IdentifyResult(
     val Log: String
 )
 
-data class Configuration(
-    val previous: Configuration?,
+data class Branch(
+    val previous: Branch?,
     val state: Char,
     private val str: String,
     val charIndex: Int
