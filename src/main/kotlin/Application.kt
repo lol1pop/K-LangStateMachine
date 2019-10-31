@@ -1,4 +1,5 @@
 import core.LangStateMachine
+import core.StateMachine
 import gui.MainForm
 import javafx.application.Application
 import tornadofx.*
@@ -19,6 +20,7 @@ fun main() {
     )
     val startState = 'p'
     val acceptStates = "r"
+    val chain = "01001"
 
     val data = LangStateMachine(
         states,
@@ -27,6 +29,12 @@ fun main() {
         startState,
         acceptStates
     )
-    val temp = data.getRegulation()
-    println(temp)
+
+    val stateMachineTest = StateMachine(data)
+    val result = stateMachineTest.identifyChain(chain)
+    println(result.Log)
+    if (result.IsRecognized)
+        println("The string '$chain' is ACCEPTED")
+    else
+        println("The string '$chain' is NOT ACCEPTED")
 }

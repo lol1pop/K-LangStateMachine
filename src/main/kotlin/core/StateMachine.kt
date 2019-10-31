@@ -12,16 +12,17 @@ class StateMachine(initData: LangStateMachine) {
 
     fun identifyChain(chain: String): IdentifyResult {
         val branches = Stack<Branch>()
-        val fails = listOf<String>()
+        val fails = mutableListOf<String>()
         var currencyBranch = Branch(null, startState, chain, 0)
         do {
             var state = currencyBranch.state
             var charIndex = currencyBranch.charIndex
             for (symbol in chain) {
+                charIndex++
                 if (!alphabets.contains(symbol)) return IdentifyResult( false, "${currencyBranch.ReconstructHistory()}\nIllegal symbol '${symbol}'.")
                 val nextPossibleStates: CharArray = mapRegulation["$state$symbol"] ?: charArrayOf()
                 if (nextPossibleStates.isEmpty()) {
-                    fails + "${currencyBranch.ReconstructHistory()}: No transition for (${state}, ${symbol})."
+                    fails += "${currencyBranch.ReconstructHistory()}: No way for (${state}, ${symbol})."
                     break
                 }
                 val nextState = nextPossibleStates[0]
@@ -31,13 +32,12 @@ class StateMachine(initData: LangStateMachine) {
                 }
                 state = nextState
                 currencyBranch = Branch(currencyBranch, state, chain, charIndex)
-                charIndex++
             }
             if (charIndex == chain.length) {
                 if (acceptStates.contains(state)){
                     return IdentifyResult( true, currencyBranch.ReconstructHistory())
                 }else {
-                    fails + "${currencyBranch.ReconstructHistory()}: Stopped not in final configuration."
+                    fails += "${currencyBranch.ReconstructHistory()}: Stopped not in final configuration."
                 }
             }
             if (!branches.empty()){
@@ -47,7 +47,8 @@ class StateMachine(initData: LangStateMachine) {
             }
         } while (true)
 
-        return IdentifyResult(true, "lol")
+        val log = "None path accepted the string:\n" + fails.joinToString("\n")
+        return IdentifyResult(false, log)
     }
 
 }
